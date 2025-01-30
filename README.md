@@ -9,6 +9,6 @@ Last update status:
 Just add [link](https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/merged.hosts) to the 
 `/etc/pihole/adlists.list`  and run gravity update:
 ```shell
-echo https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/merged.hosts > /etc/pihole/adlists.list
-pihole -g
+$ echo https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/merged.hosts > /etc/pihole/adlists.list
+$ pihole -g
 ```
