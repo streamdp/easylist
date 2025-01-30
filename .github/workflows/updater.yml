@@ -24,7 +24,7 @@ jobs:
         run: |
           git config --local user.name "autocommit"
           git config --local user.email "<>"
-          git add ./merged.hosts
+          git add ./easy-lists-merged.hosts
           git commit -m "updating easy-lists-merged.hosts ad-list."
       - name: Push changes
         uses: ad-m/github-push-action@master
