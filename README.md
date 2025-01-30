@@ -12,3 +12,8 @@ $ sqlite3 /etc/pihole/gravity.db  "insert into adlist (address) values('https://
 $ sqlite3 /etc/pihole/gravity.db  "insert into adlist (address) values('https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/blocklistproject.merged')"
 $ pihole -g
 ```
+### Actual links
+```shell
+https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/easy-lists.merged
+https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/blocklistproject.merged
+```
