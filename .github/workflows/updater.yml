@@ -8,24 +8,29 @@ on:
 
 jobs:
   update-ad-list:
+    strategy:
+      matrix:
+        file: [
+          { name: "easy-list", license: "! Original licence: https://easylist.to/pages/licence.html" },
+          { name: "blocklistproject", license: "! License: https://unlicense.org" },
+        ]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4.1.7
-      - name: Update easy-lists-merged.hosts ad-list
+      - name: Update ${{ matrix.file.name }} ad-list
         run: |
-          if [ -d .tmp/ ]; then exit 1; else mkdir .tmp/; fi
-          for source in $(cat easy-lists.lst); do curl --silent $source >> .tmp/adblock.unsorted; done
-          sort -u .tmp/adblock.unsorted | grep ^\|\|.*\^$ | grep -v \/ > .tmp/adblock.sorted
-          echo -e "! Last update: $(date)\n! Original licence: https://easylist.to/pages/licence.html" > easy-lists-merged.hosts
-          sed 's/[\|^]//g' < .tmp/adblock.sorted >> easy-lists-merged.hosts && rm -rf .tmp/
-          if [ ! -f easy-lists-merged.hosts ]; then  exit 1; else exit 0; fi
+          for source in $(cat ${{ matrix.file.name }}.lst); do curl --silent $source >> /tmp/adblock-${{ matrix.file.name }}.unsorted; done
+          sort -u /tmp/adblock-${{ matrix.file.name }}.unsorted | grep ^\|\|.*\^$ | grep -v \/ > /tmp/adblock-${{ matrix.file.name }}.sorted
+          echo -e "! Last update: $(date)\n" > ${{ matrix.file.name }}-merged.hosts
+          echo ${{ matrix.file.license }} >  ${{ matrix.file.name }}-merged.hosts
+          sed 's/[\|^]//g' < /tmp/adblock-${{ matrix.file.name }}.sorted >> ${{ matrix.file.name }}-merged.hosts
       - name: Commit changes
         run: |
           git config --local user.name "autocommit"
           git config --local user.email "<>"
-          git add ./easy-lists-merged.hosts
-          git commit -m "updating easy-lists-merged.hosts ad-list."
+          git add ./${{ matrix.file.name }}-merged.hosts
+          git commit -m "updating ${{ matrix.file.name }}-merged.hosts ad-list."
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
