@@ -10,10 +10,7 @@ jobs:
   update-ad-list:
     strategy:
       matrix:
-        l: [
-          { name: "easy-lists", selector: "^\|\|.*\^$",cleanup: "s/[\|^]//g",license: "! Original licence: https://easylist.to/pages/licence.html"},
-          { name: "blocklistproject", selector: "^0.*$", cleanup: "s/(.+|)0.0.0.0\s+//g", license: "! License: https://unlicense.org"}
-        ]
+       l: [{ name: 'easy-lists', selector: '^\|\|.*\^$',cleanup: 's/[\|^]//g',license: 'https://easylist.to/pages/licence.html'}, { name: 'blocklistproject', selector: '^0.*$', cleanup: 's/(.+|)0.0.0.0\s+//g', license: 'https://unlicense.org'}]
       max-parallel: 1
     runs-on: ubuntu-24.04
     steps:
@@ -24,7 +21,7 @@ jobs:
           for source in $(cat ${{ matrix.l.name }}.lst); do curl --silent $source >> /tmp/${{ matrix.l.name }}.unsorted; done
           sort -u /tmp/${{ matrix.l.name }}.unsorted | grep ${{ matrix.l.selector }} | grep -v \/ > /tmp/${{ matrix.l.name }}.sorted
           echo -e "! Last update: $(date)\n" > ${{ matrix.l.name }}.merged
-          echo "${{ matrix.l.license }}" >>  ${{ matrix.l.name }}.merged
+          echo "! Original licence: ${{ matrix.l.license }}" >>  ${{ matrix.l.name }}.merged
           sed -E ${{ matrix.l.cleanup }} < /tmp/${{ matrix.l.name }}.sorted >> ${{ matrix.l.name }}.merged
       - name: Commit changes
         run: |
