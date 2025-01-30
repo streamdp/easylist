@@ -10,11 +10,11 @@ jobs:
   update-ad-list:
     runs-on: ubuntu-24.04
     steps:
-      - env:
-          ADDITIONAL_INFO: '! Original licence: https://easylist.to/pages/licence.html'
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4.1.7
       - name: Update merged.hosts ad-list
+        env:
+          ADDITIONAL_INFO: '! Original licence: https://easylist.to/pages/licence.html'
         run: |
           if [ -d .tmp/ ]; then exit 1; else mkdir .tmp/; fi
           for source in $(cat easy-lists.lst); do curl --silent $source >> .tmp/adblock.unsorted; done
