@@ -7,7 +7,7 @@ Last update status:
 
 ### Usage
 Just add [link](https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/merged.hosts) to the 
-`/etc/pihole/adlists.list`  and run gravity update:
+`/etc/pihole/adlists.list` or use buil-in [Adlists](http://pi.hole/admin/groups-adlists.php) manager and run gravity update:
 ```shell
 $ echo https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/merged.hosts > /etc/pihole/adlists.list
 $ pihole -g
