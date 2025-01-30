@@ -10,7 +10,7 @@ jobs:
   update-ad-list:
     strategy:
       matrix:
-       l: [{ name: 'easy-lists', selector: '^\|\|.*\^$',cleanup: 's/[\|^]//g',license: 'https://easylist.to/pages/licence.html'}, { name: 'blocklistproject', selector: '^0.*$', cleanup: 's/(.+|)0.0.0.0\s+//g', license: 'https://unlicense.org'}]
+       l: [{name: 'easy-lists', selector: '^\|\|.*\^$', cleanup: 's/[\|^]//g', license: 'https://easylist.to/pages/licence.html'}, {name: 'blocklistproject', selector: '^0.*$', cleanup: 's/(.+|)0.0.0.0\s+//g', license: 'https://unlicense.org'}]
       max-parallel: 1
     runs-on: ubuntu-24.04
     steps:
@@ -27,6 +27,7 @@ jobs:
         run: |
           git config --local user.name "autocommit"
           git config --local user.email "<>"
+          git pull
           git add ${{ matrix.l.name }}.merged
           git commit -m "updating ${{ matrix.l.name }}.merged ad-list."
       - name: Push changes
