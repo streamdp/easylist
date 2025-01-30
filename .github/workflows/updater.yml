@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         file: [
-          { name: "easy-list", license: "! Original licence: https://easylist.to/pages/licence.html" },
+          { name: "easy-lists", license: "! Original licence: https://easylist.to/pages/licence.html" },
           { name: "blocklistproject", license: "! License: https://unlicense.org" },
         ]
     runs-on: ubuntu-24.04
@@ -23,7 +23,7 @@ jobs:
           for source in $(cat ${{ matrix.file.name }}.lst); do curl --silent $source >> /tmp/adblock-${{ matrix.file.name }}.unsorted; done
           sort -u /tmp/adblock-${{ matrix.file.name }}.unsorted | grep ^\|\|.*\^$ | grep -v \/ > /tmp/adblock-${{ matrix.file.name }}.sorted
           echo -e "! Last update: $(date)\n" > ${{ matrix.file.name }}-merged.hosts
-          echo ${{ matrix.file.license }} >  ${{ matrix.file.name }}-merged.hosts
+          echo "${{ matrix.file.license }}" >  ${{ matrix.file.name }}-merged.hosts
           sed 's/[\|^]//g' < /tmp/adblock-${{ matrix.file.name }}.sorted >> ${{ matrix.file.name }}-merged.hosts
       - name: Commit changes
         run: |
