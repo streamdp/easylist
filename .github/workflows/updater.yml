@@ -10,18 +10,10 @@ jobs:
   update-ad-list:
     strategy:
       matrix:
-        l: [{
-            name: "easy-lists",
-            selector: "^\|\|.*\^$",
-            cleanup: "s/[\|^]//g",
-            license: "! Original licence: https://easylist.to/pages/licence.html",
-          },
-          {
-            name: "blocklistproject",
-            selector: "^0.*$" ,
-            cleanup: "s/(.+|)0.0.0.0\s+//g",
-            license: "! License: https://unlicense.org",
-          }]
+        l: [
+          { name: "easy-lists", selector: "^\|\|.*\^$",cleanup: "s/[\|^]//g",license: "! Original licence: https://easylist.to/pages/licence.html"},
+          { name: "blocklistproject", selector: "^0.*$", cleanup: "s/(.+|)0.0.0.0\s+//g", license: "! License: https://unlicense.org"}
+        ]
       max-parallel: 1
     runs-on: ubuntu-24.04
     steps:
