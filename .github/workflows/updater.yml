@@ -20,16 +20,18 @@ jobs:
         uses: actions/checkout@v4.1.7
       - name: Update ${{ matrix.file.name }} ad-list
         run: |
-          for source in $(cat ${{ matrix.file.name }}.lst); do curl --silent $source >> /tmp/adblock-${{ matrix.file.name }}.unsorted; done
-          sort -u /tmp/adblock-${{ matrix.file.name }}.unsorted | grep ^\|\|.*\^$ | grep -v \/ > /tmp/adblock-${{ matrix.file.name }}.sorted
+          mkdir tmp-${{ matrix.file.name }}
+          for source in $(cat ${{ matrix.file.name }}.lst); do curl --silent $source >> tmp-${{ matrix.file.name }}/adblock-${{ matrix.file.name }}.unsorted; done
+          sort -u tmp-${{ matrix.file.name }}/adblock-${{ matrix.file.name }}.unsorted | grep ^\|\|.*\^$ | grep -v \/ > tmp-${{ matrix.file.name }}/adblock-${{ matrix.file.name }}.sorted
           echo -e "! Last update: $(date)\n" > ${{ matrix.file.name }}-merged.hosts
           echo "${{ matrix.file.license }}" >  ${{ matrix.file.name }}-merged.hosts
-          sed 's/[\|^]//g' < /tmp/adblock-${{ matrix.file.name }}.sorted >> ${{ matrix.file.name }}-merged.hosts
+          sed 's/[\|^]//g' < tmp-${{ matrix.file.name }}/adblock-${{ matrix.file.name }}.sorted >> ${{ matrix.file.name }}-merged.hosts
+          rm -rf tmp-${{ matrix.file.name }}
       - name: Commit changes
         run: |
           git config --local user.name "autocommit"
           git config --local user.email "<>"
-          git add ./${{ matrix.file.name }}-merged.hosts
+          git add ${{ matrix.file.name }}-merged.hosts
           git commit -m "updating ${{ matrix.file.name }}-merged.hosts ad-list."
       - name: Push changes
         uses: ad-m/github-push-action@master
