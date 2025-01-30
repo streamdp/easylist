@@ -10,28 +10,38 @@ jobs:
   update-ad-list:
     strategy:
       matrix:
-        file: [
-          { name: "easy-lists", license: "! Original licence: https://easylist.to/pages/licence.html" },
-          { name: "blocklistproject", license: "! License: https://unlicense.org" },
+        f: [
+          {
+            name: "easy-lists",
+            grep: "^\|\|.*\^$",
+            sed: "s/[\|^]//g",
+            license: "! Original licence: https://easylist.to/pages/licence.html",
+          },
+          {
+            name: "blocklistproject",
+            grep: "^0.*$" ,
+            sed: "s/(.+|)0.0.0.0\s+//g",
+            license: "! License: https://unlicense.org",
+          },
         ]
       max-parallel: 1
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4.1.7
-      - name: Update ${{ matrix.file.name }} ad-list
+      - name: Update ${{ matrix.f.name }} ad-list
         run: |
-          for source in $(cat ${{ matrix.file.name }}.lst); do curl --silent $source >> /tmp/${{ matrix.file.name }}.unsorted; done
-          sort -u /tmp/${{ matrix.file.name }}.unsorted | grep ^\|\|.*\^$ | grep -v \/ > /tmp/${{ matrix.file.name }}.sorted
-          echo -e "! Last update: $(date)\n" > ${{ matrix.file.name }}.merged
-          echo "${{ matrix.file.license }}" >  ${{ matrix.file.name }}.merged
-          sed 's/[\|^]//g' < /tmp/${{ matrix.file.name }}.sorted >> ${{ matrix.file.name }}.merged
+          for source in $(cat ${{ matrix.f.name }}.lst); do curl --silent $source >> /tmp/${{ matrix.f.name }}.unsorted; done
+          sort -u /tmp/${{ matrix.f.name }}.unsorted | grep ${{ matrix.f.grep }} | grep -v \/ > /tmp/${{ matrix.f.name }}.sorted
+          echo -e "! Last update: $(date)\n" > ${{ matrix.f.name }}.merged
+          echo "${{ matrix.f.license }}" >>  ${{ matrix.f.name }}.merged
+          sed -E ${{ matrix.f.sed }} < /tmp/${{ matrix.f.name }}.sorted >> ${{ matrix.f.name }}.merged
       - name: Commit changes
         run: |
           git config --local user.name "autocommit"
           git config --local user.email "<>"
-          git add ${{ matrix.file.name }}.merged
-          git commit -m "updating ${{ matrix.file.name }}.merged ad-list."
+          git add ${{ matrix.f.name }}.merged
+          git commit -m "updating ${{ matrix.f.name }}.merged ad-list."
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
