@@ -21,7 +21,7 @@ jobs:
           for source in $(cat raw/${{ matrix.l.name }}.lst); do curl --silent $source >> /tmp/${{ matrix.l.name }}.unsorted; done
           sort -u /tmp/${{ matrix.l.name }}.unsorted | grep ${{ matrix.l.selector }} | grep -v \/ > /tmp/${{ matrix.l.name }}.sorted
           echo -e "! Last update: $(date)" > ${{ matrix.l.name }}.merged
-          echo "! Original licence: ${{ matrix.l.license }}" >>  ${{ matrix.l.name }}.merged
+          echo "! Original license: ${{ matrix.l.license }}" >>  ${{ matrix.l.name }}.merged
           sed -E '${{ matrix.l.cleanup }}' < /tmp/${{ matrix.l.name }}.sorted >> ${{ matrix.l.name }}.merged
       - name: Commit changes
         run: |
