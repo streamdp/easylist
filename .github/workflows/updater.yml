@@ -25,7 +25,7 @@ jobs:
       - name: Commit changes
         run: |
           git config --local user.name "autocommit"
-          git config --local user.email "primak.aa@gmail.com"
+          git config --local user.email "<>"
           git add ./merged.hosts
           git commit -m "updating merged.hosts ad-list."
       - name: Push changes
