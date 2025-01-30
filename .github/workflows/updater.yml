@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4.1.7
       - name: Update ${{ matrix.l.name }} ad-list
         run: |
-          for source in $(cat ${{ matrix.l.name }}.lst); do curl --silent $source >> /tmp/${{ matrix.l.name }}.unsorted; done
+          for source in $(cat raw/${{ matrix.l.name }}.lst); do curl --silent $source >> /tmp/${{ matrix.l.name }}.unsorted; done
           sort -u /tmp/${{ matrix.l.name }}.unsorted | grep ${{ matrix.l.selector }} | grep -v \/ > /tmp/${{ matrix.l.name }}.sorted
           echo -e "! Last update: $(date)" > ${{ matrix.l.name }}.merged
           echo "! Original licence: ${{ matrix.l.license }}" >>  ${{ matrix.l.name }}.merged
