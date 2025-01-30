@@ -1,4 +1,4 @@
-name: healthcheck
+name: updater
 
 on:
   push:
@@ -7,9 +7,11 @@ on:
     - cron: '25 5 * * *'
 
 jobs:
-  check-site:
+  update-ad-list:
     runs-on: ubuntu-24.04
     steps:
+      - env:
+          ADDITIONAL_INFO: '! Original licence: https://easylist.to/pages/licence.html'
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4.1.7
       - name: Update merged.hosts ad-list
@@ -17,7 +19,7 @@ jobs:
           if [ -d .tmp/ ]; then exit 1; else mkdir .tmp/; fi
           for source in $(cat easy-lists.lst); do curl --silent $source >> .tmp/adblock.unsorted; done
           sort -u .tmp/adblock.unsorted | grep ^\|\|.*\^$ | grep -v \/ > .tmp/adblock.sorted
-          echo '! Original licence: https://easylist.to/pages/licence.html' > merged.hosts
+          echo $ADDITIONAL_INFO > merged.hosts
           sed 's/[\|^]//g' < .tmp/adblock.sorted >> merged.hosts && rm -rf .tmp/
           if [ ! -f merged.hosts ]; then  exit 1; else exit 0; fi
       - name: Commit changes
