@@ -10,18 +10,31 @@ jobs:
   update-ad-list:
     strategy:
       matrix:
-       l: [{name: 'easy-lists', selector: '^\|\|.*\^$', cleanup: 's/[\|^]//g', license: 'https://easylist.to/pages/licence.html'}, {name: 'blocklistproject', selector: '^0.*$', cleanup: 's/(.+|)0.0.0.0\s+//g', license: 'https://unlicense.org'}]
+        l: [{name: 'easy-lists', selector: '^\|\|.*\^$', cleanup: 's/[\|^]//g'}, {name: 'blocklistproject', selector: '^0.*$', cleanup: 's/(.+|)0.0.0.0\s+//g'},{name: 'mixed', selector: '^\|\|.*\^$', cleanup: 's/[\|^]//g'}]
       max-parallel: 1
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout ${{ github.repository }}
         uses: actions/checkout@v4.1.7
-      - name: Update ${{ matrix.l.name }} ad-list
+      - name: Fetch ${{ matrix.l.name }} ad-lists
         run: |
-          for source in $(cat raw/${{ matrix.l.name }}.lst); do curl --silent $source >> /tmp/${{ matrix.l.name }}.unsorted; done
+          for source in $(cat raw/${{ matrix.l.name }}.lst); 
+          do 
+            curl -w "response: %{http_code} - %{url_effective}\n" -L --connect-timeout 10 -m 60 --silent -o /tmp/curr $source || true;   
+            cat /tmp/curr | grep -Ei '^[!#]\s*licen[sc]e.+$' | awk -v src="$source" '{print $0 " ("src")"}' >> /tmp/${{ matrix.l.name }}.licenses
+            echo -e "\t`wc -l /tmp/curr | cut -d " " -f 1` lines downloaded"
+            cat /tmp/curr >> /tmp/${{ matrix.l.name }}.unsorted
+          done
+          echo -e "total lines downloaded: `wc -l /tmp/${{ matrix.l.name }}.unsorted | cut -d " " -f 1`"
+      - name: Sort valid hostnames
+        run: |
           sort -u /tmp/${{ matrix.l.name }}.unsorted | grep ${{ matrix.l.selector }} | grep -v \/ > /tmp/${{ matrix.l.name }}.sorted
+      - name: Add header
+        run: |
           echo -e "! Last update: $(date)" > ${{ matrix.l.name }}.merged
-          echo "! Original license: ${{ matrix.l.license }}" >>  ${{ matrix.l.name }}.merged
+          sort -u /tmp/${{ matrix.l.name }}.licenses >> ${{ matrix.l.name }}.merged
+      - name: Add sorted hostnames
+        run: |
           sed -E '${{ matrix.l.cleanup }}' < /tmp/${{ matrix.l.name }}.sorted >> ${{ matrix.l.name }}.merged
       - name: Commit changes
         run: |
