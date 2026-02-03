@@ -10,10 +10,12 @@ Just add the **links** you need to the `gravity.db` or use built-in pi-hole [Adl
 ```shell
 $ sqlite3 /etc/pihole/gravity.db  "insert into adlist (address) values('https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/easy-lists.merged')"
 $ sqlite3 /etc/pihole/gravity.db  "insert into adlist (address) values('https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/blocklistproject.merged')"
+$ sqlite3 /etc/pihole/gravity.db  "insert into adlist (address) values('https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/mixed.merged')"
 $ pihole -g
 ```
 ### Actual links
 ```shell
 https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/easy-lists.merged
 https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/blocklistproject.merged
+https://raw.githubusercontent.com/streamdp/easylist/refs/heads/main/mixed.merged
 ```
