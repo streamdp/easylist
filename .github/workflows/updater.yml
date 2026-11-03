@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout ${{ github.repository }}
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v7
       - name: Fetch ${{ matrix.l.name }} ad-lists
         run: |
           for source in $(cat raw/${{ matrix.l.name }}.lst); 
